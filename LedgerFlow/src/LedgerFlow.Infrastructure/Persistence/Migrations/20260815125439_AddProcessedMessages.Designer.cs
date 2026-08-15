@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LedgerFlow.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(LedgerFlowDbContext))]
-    [Migration("20260815120904_AddOutboxMessages")]
-    partial class AddOutboxMessages
+    [Migration("20260815125439_AddProcessedMessages")]
+    partial class AddProcessedMessages
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,6 +94,20 @@ namespace LedgerFlow.Infrastructure.Persistence.Migrations
                     b.HasIndex("MerchantId", "OccurredAt");
 
                     b.ToTable("Transactions", (string)null);
+                });
+
+            modelBuilder.Entity("LedgerFlow.Infrastructure.Messaging.RabbitMq.Idempotency.ProcessedMessage", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("MessageId");
+
+                    b.ToTable("ProcessedMessages", (string)null);
                 });
 
             modelBuilder.Entity("LedgerFlow.Outbox.Messages.OutboxMessage", b =>

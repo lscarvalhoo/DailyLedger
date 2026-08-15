@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LedgerFlow.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(LedgerFlowDbContext))]
-    [Migration("20260815120904_AddOutboxMessages")]
-    partial class AddOutboxMessages
+    [Migration("20260815135201_AddOutboxTraceContext")]
+    partial class AddOutboxTraceContext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,6 +96,20 @@ namespace LedgerFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("Transactions", (string)null);
                 });
 
+            modelBuilder.Entity("LedgerFlow.Infrastructure.Messaging.RabbitMq.Idempotency.ProcessedMessage", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("MessageId");
+
+                    b.ToTable("ProcessedMessages", (string)null);
+                });
+
             modelBuilder.Entity("LedgerFlow.Outbox.Messages.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -114,6 +128,14 @@ namespace LedgerFlow.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("RetryCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("TraceParent")
+                        .HasMaxLength(55)
+                        .HasColumnType("nvarchar(55)");
+
+                    b.Property<string>("TraceState")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("Type")
                         .IsRequired()

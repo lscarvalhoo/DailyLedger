@@ -1,8 +1,8 @@
 using LedgerFlow.Domain.Aggregates;
 using LedgerFlow.Domain.Events;
 using LedgerFlow.Infrastructure.Messaging.RabbitMq.Idempotency;
-using LedgerFlow.Outbox;
-using LedgerFlow.Outbox.Configurations;
+using LedgerFlow.Outbox.Messages;
+using LedgerFlow.Outbox.Persistence.Configurations;
 using LedgerFlow.Outbox.Persistence;
 using Microsoft.EntityFrameworkCore;
 
