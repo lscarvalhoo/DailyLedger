@@ -13,6 +13,12 @@ public static class DatabaseMigrationExtensions
         await using var scope = serviceProvider.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<LedgerFlowDbContext>();
 
-        await context.Database.MigrateAsync(cancellationToken);
+        if (context.Database.IsRelational())
+        {
+            await context.Database.MigrateAsync(cancellationToken);
+            return;
+        }
+
+        await context.Database.EnsureCreatedAsync(cancellationToken);
     }
 }
