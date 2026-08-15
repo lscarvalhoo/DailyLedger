@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FluentValidation;
 using LedgerFlow.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ public sealed class ExceptionHandlingMiddleware(
         }
         catch (ValidationException exception)
         {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, "Validation failed");
             var errors = exception.Errors
                 .GroupBy(error => error.PropertyName)
                 .ToDictionary(
@@ -32,6 +34,7 @@ public sealed class ExceptionHandlingMiddleware(
         }
         catch (DomainException exception)
         {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, exception.Message);
             var problem = new ProblemDetails
             {
                 Status = StatusCodes.Status422UnprocessableEntity,
@@ -43,6 +46,7 @@ public sealed class ExceptionHandlingMiddleware(
         }
         catch (Exception exception)
         {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, exception.Message);
             logger.LogError(exception, "An unhandled error occurred while processing the request.");
 
             var problem = new ProblemDetails
@@ -55,7 +59,11 @@ public sealed class ExceptionHandlingMiddleware(
         }
     }
 
-    private static async Task WriteProblemAsync(HttpContext context, ProblemDetails problem, int statusCode)
+    private static async Task WriteProblemAsync<TProblem>(
+        HttpContext context,
+        TProblem problem,
+        int statusCode)
+        where TProblem : ProblemDetails
     {
         context.Response.StatusCode = statusCode;
         context.Response.ContentType = "application/problem+json";
