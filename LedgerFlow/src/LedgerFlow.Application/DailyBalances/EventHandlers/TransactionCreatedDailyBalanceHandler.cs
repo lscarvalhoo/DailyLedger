@@ -17,7 +17,7 @@ public sealed class TransactionCreatedDailyBalanceHandler(
 
         if (transaction is null)
         {
-            return;
+            throw new InvalidOperationException($"Transaction '{notification.DomainEvent.TransactionId}' was not found.");
         }
 
         var date = DateOnly.FromDateTime(transaction.OccurredAt);

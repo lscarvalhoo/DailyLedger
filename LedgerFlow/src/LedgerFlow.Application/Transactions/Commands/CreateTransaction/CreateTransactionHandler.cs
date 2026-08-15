@@ -6,7 +6,7 @@ namespace LedgerFlow.Application.Transactions.Commands.CreateTransaction;
 
 public sealed class CreateTransactionHandler(
     ITransactionRepository transactionRepository,
-    IDomainEventDispatcher domainEventDispatcher) : ICommandHandler<CreateTransactionCommand, Guid>
+    IUnitOfWork unitOfWork) : ICommandHandler<CreateTransactionCommand, Guid>
 {
     public async Task<Guid> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
     {
@@ -18,9 +18,7 @@ public sealed class CreateTransactionHandler(
             request.Description!);
 
         await transactionRepository.AddAsync(transaction, cancellationToken);
-
-        await domainEventDispatcher.DispatchAsync(transaction.DomainEvents, cancellationToken);
-        transaction.ClearDomainEvents();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return transaction.Id;
     }

@@ -4,7 +4,7 @@ using LedgerFlow.Domain.Exceptions;
 
 namespace LedgerFlow.Domain.Aggregates;
 
-public sealed class Transaction
+public sealed class Transaction : IHasDomainEvents
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 

@@ -1,8 +1,8 @@
-using System.Reflection;
 using FluentValidation;
 using LedgerFlow.Application.Abstractions;
 using LedgerFlow.Application.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace LedgerFlow.Application;
 
@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(assembly);
+            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
