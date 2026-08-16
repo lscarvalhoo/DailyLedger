@@ -1,3 +1,5 @@
+using LedgerFlow.API.Contracts.Responses;
+using LedgerFlow.Infrastructure.Persistence;
 using LedgerFlow.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -7,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace LedgerFlow.IntegrationTests.Common;
 
@@ -48,5 +52,22 @@ public sealed class LedgerFlowApiFactory : WebApplicationFactory<Program>
         var context = scope.ServiceProvider.GetRequiredService<LedgerFlowDbContext>();
         await context.Database.EnsureDeletedAsync();
         await context.Database.EnsureCreatedAsync();
+        await Services.SeedDefaultUserAsync();
+    }
+
+    public async Task<HttpClient> CreateAuthenticatedClientAsync()
+    {
+        var client = CreateClient();
+        var response = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = "usuarioteste@roxpartner.com",
+            password = "TesteRoxpartner!"
+        });
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<LoginResponse>>();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            body!.Data!.AccessToken);
+        return client;
     }
 }

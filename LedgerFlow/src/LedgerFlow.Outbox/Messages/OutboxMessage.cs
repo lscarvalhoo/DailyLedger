@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using LedgerFlow.Domain.Events;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace LedgerFlow.Outbox.Messages;

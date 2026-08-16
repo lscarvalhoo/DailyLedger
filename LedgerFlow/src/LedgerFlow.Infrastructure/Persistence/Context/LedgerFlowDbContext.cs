@@ -1,9 +1,10 @@
 using LedgerFlow.Domain.Aggregates;
+using LedgerFlow.Domain.Entities;
 using LedgerFlow.Domain.Events;
 using LedgerFlow.Infrastructure.Messaging.RabbitMq.Idempotency;
 using LedgerFlow.Outbox.Messages;
-using LedgerFlow.Outbox.Persistence.Configurations;
 using LedgerFlow.Outbox.Persistence;
+using LedgerFlow.Outbox.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace LedgerFlow.Infrastructure.Persistence.Context;
@@ -13,6 +14,7 @@ public sealed class LedgerFlowDbContext(DbContextOptions<LedgerFlowDbContext> op
 {
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<DailyBalance> DailyBalances => Set<DailyBalance>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<ProcessedMessage> ProcessedMessages => Set<ProcessedMessage>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 

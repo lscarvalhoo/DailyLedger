@@ -1,7 +1,3 @@
-using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using LedgerFlow.API.Contracts.Responses;
 using LedgerFlow.Domain.Aggregates;
 using LedgerFlow.Infrastructure.Persistence.Context;
@@ -9,6 +5,10 @@ using LedgerFlow.IntegrationTests.Common;
 using LedgerFlow.Outbox.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace LedgerFlow.IntegrationTests.API.Transactions;
 
@@ -24,10 +24,7 @@ public sealed class TransactionsEndpointsTests(LedgerFlowApiFactory factory)
     public async Task PostTransaction_WhenRequestIsValid_ShouldPersistTransactionAndOutbox()
     {
         await factory.ResetDatabaseAsync();
-        using var client = factory.CreateClient(new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var merchantId = Guid.NewGuid();
         var request = new
         {
@@ -56,7 +53,7 @@ public sealed class TransactionsEndpointsTests(LedgerFlowApiFactory factory)
     public async Task PostTransaction_WhenAmountIsNegative_ShouldReturnPreciseValidationError()
     {
         await factory.ResetDatabaseAsync();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var request = new
         {
             merchantId = Guid.NewGuid(),
@@ -79,7 +76,7 @@ public sealed class TransactionsEndpointsTests(LedgerFlowApiFactory factory)
     public async Task GetTransaction_WhenTransactionExists_ShouldReturnPersistedData()
     {
         await factory.ResetDatabaseAsync();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
         var createResponse = await client.PostAsJsonAsync("/api/transactions", new
         {
             merchantId = Guid.NewGuid(),
@@ -103,7 +100,7 @@ public sealed class TransactionsEndpointsTests(LedgerFlowApiFactory factory)
     public async Task GetTransaction_WhenTransactionDoesNotExist_ShouldReturnNotFound()
     {
         await factory.ResetDatabaseAsync();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var response = await client.GetAsync($"/api/transactions/{Guid.NewGuid()}");
 

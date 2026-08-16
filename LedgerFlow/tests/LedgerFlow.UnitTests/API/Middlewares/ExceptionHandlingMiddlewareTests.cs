@@ -1,10 +1,10 @@
-using System.Text.Json;
 using FluentValidation;
 using FluentValidation.Results;
 using LedgerFlow.API.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using System.Text.Json;
 
 namespace LedgerFlow.UnitTests.API.Middlewares;
 

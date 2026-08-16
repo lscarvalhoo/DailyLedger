@@ -1,7 +1,7 @@
-using System.Diagnostics;
 using LedgerFlow.Application.Telemetry;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace LedgerFlow.Application.Behaviors;
 

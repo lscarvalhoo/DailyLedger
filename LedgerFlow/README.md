@@ -61,6 +61,10 @@ LedgerFlow/
 │   │   └── Transactions/
 │   ├── LedgerFlow.Domain/
 │   │   ├── Aggregates/
+│   │   │   ├── DailyBalances/
+│   │   │   └── Transactions/
+│   │   ├── Entities/
+│   │   │   └── Users/
 │   │   ├── Enums/
 │   │   ├── Events/
 │   │   ├── Exceptions/
@@ -234,10 +238,46 @@ As consultas disponíveis são `GetTransactionQuery` e `GetDailyBalanceQuery`. R
 | Exceção | Status HTTP |
 | --- | --- |
 | `ValidationException` | `400 Bad Request` |
+| `InvalidCredentialsException` | `401 Unauthorized` |
 | `DomainException` | `422 Unprocessable Entity` |
 | Exceção não tratada | `500 Internal Server Error` |
 
 ## Segurança
+
+A API usa autenticação JWT Bearer. O endpoint de login é público; todas as controllers de negócio exigem token válido.
+
+Fluxo:
+
+```text
+POST /api/auth/login
+	-> LoginCommand
+	-> LoggingBehavior
+	-> ValidationBehavior
+	-> LoginHandler
+	-> consulta Users + verifica hash
+	-> gera JWT
+```
+
+Usuário criado automaticamente para desenvolvimento:
+
+```text
+E-mail: usuarioteste@roxpartner.com
+Senha:  TesteRoxpartner!
+```
+
+A senha não é persistida em texto puro; apenas o hash gerado por `PasswordHasher<User>` é armazenado. A chave JWT padrão existe somente para desenvolvimento e deve ser substituída por `Jwt__Key` ou `JWT_KEY` em outros ambientes.
+
+Endpoints anônimos:
+
+- `POST /api/auth/login`;
+- `/health`;
+- Swagger/OpenAPI.
+
+Endpoints protegidos retornam `401 Unauthorized` quando o header abaixo estiver ausente ou inválido:
+
+```http
+Authorization: Bearer {accessToken}
+```
 
 ## Domínio
 
@@ -499,6 +539,20 @@ As configurações RabbitMQ podem ser sobrescritas por variáveis como `RabbitMq
 
 ### Tabelas
 
+#### Users
+
+| Coluna | Tipo | Descrição |
+| --- | --- | --- |
+| `Id` | `uniqueidentifier` | Identificador único do usuário |
+| `Email` | `nvarchar(320)` | E-mail normalizado usado no login |
+| `PasswordHash` | `nvarchar(500)` | Hash seguro da senha; nunca contém a senha em texto puro |
+| `CreatedAt` | `datetime2` | Data e hora de criação do usuário em UTC |
+
+Índices:
+
+- `PK_Users`: chave primária em `(Id)`;
+- `IX_Users_Email`: índice único em `(Email)`, impedindo usuários duplicados.
+
 #### Transactions
 
 | Coluna | Tipo | Descrição |
@@ -626,7 +680,7 @@ Cobertura existente:
 - serialização do contrato RabbitMQ `TransactionCreated`;
 - criação da chave idempotente `ProcessedMessage` baseada em `TransactionId`.
 
-Os testes de Outbox usam o provider InMemory do Entity Framework Core. A suíte unitária possui 50 casos.
+Os testes de Outbox usam o provider InMemory do Entity Framework Core. A suíte unitária possui 59 casos.
 
 ### Testes de integração com WebApplicationFactory
 
@@ -642,9 +696,11 @@ HTTP Test Client
 	-> Transaction + OutboxMessage
 ```
 
-O host de teste substitui SQL Server por um banco InMemory isolado e remove hosted workers externos. Os 8 testes integrados cobrem:
+O host de teste substitui SQL Server por um banco InMemory isolado e remove hosted workers externos. Os 12 testes integrados cobrem:
 
 - `/health` e documento Swagger;
+- login válido, credenciais inválidas e validação do login;
+- rejeição de endpoints protegidos sem token JWT;
 - criação de transação com resposta `201`;
 - persistência de `Transaction` e `OutboxMessage` no mesmo fluxo;
 - validação HTTP com mensagem precisa para valor negativo;
@@ -723,6 +779,36 @@ Respostas de sucesso e recursos não encontrados usam o envelope genérico:
 ```
 
 Os campos específicos de cada endpoint ficam dentro de `data`. Erros de validação e regras de negócio continuam seguindo `application/problem+json`.
+
+### Autenticação
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+```
+
+```json
+{
+	"email": "usuarioteste@roxpartner.com",
+	"password": "TesteRoxpartner!"
+}
+```
+
+Resposta: `200 OK`.
+
+```json
+{
+	"success": true,
+	"data": {
+		"accessToken": "eyJ...",
+		"tokenType": "Bearer",
+		"expiresAt": "2026-08-16T13:00:00Z"
+	},
+	"message": null
+}
+```
+
+No Swagger, clique em **Authorize** e informe somente o token. Em clientes HTTP, envie `Authorization: Bearer {accessToken}`.
 
 ### Criar transação
 

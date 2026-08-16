@@ -3,12 +3,14 @@ using LedgerFlow.API.Contracts.Responses;
 using LedgerFlow.Application.Transactions.Commands.CreateTransaction;
 using LedgerFlow.Application.Transactions.Queries.GetTransaction;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LedgerFlow.API.Controllers;
 
 [ApiController]
 [Route("api/transactions")]
+[Authorize]
 public sealed class TransactionsController(ISender sender) : ControllerBase
 {
     [HttpPost]

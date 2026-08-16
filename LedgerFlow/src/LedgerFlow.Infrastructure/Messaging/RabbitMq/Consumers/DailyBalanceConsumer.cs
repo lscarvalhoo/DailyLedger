@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Text;
 using LedgerFlow.Application.Abstractions;
 using LedgerFlow.Application.Telemetry;
 using LedgerFlow.Domain.Events;
@@ -15,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 namespace LedgerFlow.Infrastructure.Messaging.RabbitMq.Consumers;

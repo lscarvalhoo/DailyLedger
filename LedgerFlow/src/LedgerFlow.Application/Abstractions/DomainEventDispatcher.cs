@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using LedgerFlow.Application.Telemetry;
 using LedgerFlow.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace LedgerFlow.Application.Abstractions;
 

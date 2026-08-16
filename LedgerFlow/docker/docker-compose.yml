@@ -14,6 +14,7 @@ services:
       RabbitMq__UserName: "${RABBITMQ_USER:-ledgerflow}"
       RabbitMq__Password: "${RABBITMQ_PASSWORD:-LedgerFlow_Rabbit_2026!}"
       RabbitMq__VirtualHost: "/"
+      Jwt__Key: "${JWT_KEY:-LedgerFlow-Development-Jwt-Signing-Key-2026-Change-Me}"
     depends_on:
       sqlserver:
         condition: service_healthy

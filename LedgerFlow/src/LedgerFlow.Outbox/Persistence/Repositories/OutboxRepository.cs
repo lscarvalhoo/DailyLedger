@@ -1,5 +1,4 @@
 using LedgerFlow.Outbox.Messages;
-using LedgerFlow.Outbox.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 

@@ -1,5 +1,6 @@
 using LedgerFlow.Application.Abstractions;
 using LedgerFlow.Domain.Repositories;
+using LedgerFlow.Infrastructure.Authentication;
 using LedgerFlow.Infrastructure.Messaging.RabbitMq;
 using LedgerFlow.Infrastructure.Persistence;
 using LedgerFlow.Infrastructure.Persistence.Context;
@@ -25,11 +26,13 @@ public static class DependencyInjection
 
         services.AddScoped<ITransactionRepository, TransactionRepository>();
         services.AddScoped<IDailyBalanceRepository, DailyBalanceRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IOutboxDbContext>(provider =>
             provider.GetRequiredService<LedgerFlowDbContext>());
 
         services.AddRabbitMqMessaging(configuration);
+        services.AddJwtAuthentication(configuration);
 
         return services;
     }

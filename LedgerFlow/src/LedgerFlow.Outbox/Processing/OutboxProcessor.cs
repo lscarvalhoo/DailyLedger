@@ -1,10 +1,10 @@
-using System.Diagnostics;
 using LedgerFlow.Application.Telemetry;
 using LedgerFlow.Outbox.Abstractions;
 using LedgerFlow.Outbox.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace LedgerFlow.Outbox.Processing;
 

@@ -1,11 +1,10 @@
-using System.Diagnostics;
-using System.Text.Json;
 using LedgerFlow.Domain.Aggregates;
 using LedgerFlow.Domain.Enums;
 using LedgerFlow.Domain.Events;
 using LedgerFlow.Infrastructure.Persistence.Context;
-using LedgerFlow.Outbox.Messages;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace LedgerFlow.UnitTests.Outbox.Persistence.Context;
 

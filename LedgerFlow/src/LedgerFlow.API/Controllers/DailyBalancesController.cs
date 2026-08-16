@@ -1,12 +1,14 @@
 using LedgerFlow.API.Contracts.Responses;
 using LedgerFlow.Application.DailyBalances.Queries.GetDailyBalance;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LedgerFlow.API.Controllers;
 
 [ApiController]
 [Route("api/merchants/{merchantId:guid}/daily-balances")]
+[Authorize]
 public sealed class DailyBalancesController(ISender sender) : ControllerBase
 {
     [HttpGet("{date}")]

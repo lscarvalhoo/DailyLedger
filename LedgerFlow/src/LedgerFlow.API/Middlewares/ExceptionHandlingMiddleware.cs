@@ -1,7 +1,8 @@
-using System.Diagnostics;
 using FluentValidation;
+using LedgerFlow.Application.Exceptions;
 using LedgerFlow.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace LedgerFlow.API.Middlewares;
 
@@ -31,6 +32,18 @@ public sealed class ExceptionHandlingMiddleware(
             };
 
             await WriteProblemAsync(context, problem, StatusCodes.Status400BadRequest);
+        }
+        catch (InvalidCredentialsException exception)
+        {
+            Activity.Current?.SetStatus(ActivityStatusCode.Error, exception.Message);
+            var problem = new ProblemDetails
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Authentication failed.",
+                Detail = exception.Message
+            };
+
+            await WriteProblemAsync(context, problem, StatusCodes.Status401Unauthorized);
         }
         catch (DomainException exception)
         {

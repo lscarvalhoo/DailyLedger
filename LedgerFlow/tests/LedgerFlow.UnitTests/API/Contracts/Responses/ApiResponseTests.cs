@@ -1,6 +1,5 @@
 using LedgerFlow.API.Contracts.Responses;
 using LedgerFlow.Application.DTOs;
-using LedgerFlow.Domain.Aggregates;
 using LedgerFlow.Domain.Enums;
 
 namespace LedgerFlow.UnitTests.API.Contracts.Responses;

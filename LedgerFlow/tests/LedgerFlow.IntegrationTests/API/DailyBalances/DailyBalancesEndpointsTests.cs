@@ -1,11 +1,11 @@
-using System.Net;
-using System.Net.Http.Json;
 using LedgerFlow.API.Contracts.Responses;
 using LedgerFlow.Domain.Aggregates;
 using LedgerFlow.Domain.Enums;
 using LedgerFlow.Infrastructure.Persistence.Context;
 using LedgerFlow.IntegrationTests.Common;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace LedgerFlow.IntegrationTests.API.DailyBalances;
 
@@ -19,7 +19,7 @@ public sealed class DailyBalancesEndpointsTests(LedgerFlowApiFactory factory)
         var merchantId = Guid.NewGuid();
         var date = new DateOnly(2026, 8, 15);
         await SeedBalanceAsync(merchantId, date);
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var response = await client.GetAsync(
             $"/api/merchants/{merchantId}/daily-balances/{date:yyyy-MM-dd}");
@@ -35,7 +35,7 @@ public sealed class DailyBalancesEndpointsTests(LedgerFlowApiFactory factory)
     public async Task GetDailyBalance_WhenBalanceDoesNotExist_ShouldReturnNotFound()
     {
         await factory.ResetDatabaseAsync();
-        using var client = factory.CreateClient();
+        using var client = await factory.CreateAuthenticatedClientAsync();
 
         var response = await client.GetAsync(
             $"/api/merchants/{Guid.NewGuid()}/daily-balances/2026-08-15");

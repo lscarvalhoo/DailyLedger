@@ -1,7 +1,7 @@
-using System.Diagnostics;
 using LedgerFlow.Domain.Enums;
 using LedgerFlow.Domain.Events;
 using LedgerFlow.Outbox.Messages;
+using System.Diagnostics;
 
 namespace LedgerFlow.UnitTests.Outbox.Messages;
 
