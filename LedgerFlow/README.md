@@ -301,12 +301,12 @@ Regras implementadas:
 - `MerchantId` deve ser informado;
 - valor não pode ser negativo;
 - descrição deve ser informada;
-- criação gera `TransactionCreatedDomainEvent`.
+- criação gera `TransactionDomainEvent`.
 
 ```mermaid
 flowchart LR
 		CREATE[Transaction.Create] --> TRANSACTION[Transaction]
-		CREATE --> EVENT[TransactionCreatedDomainEvent]
+		CREATE --> EVENT[TransactionDomainEvent]
 ```
 
 ### DailyBalance
@@ -365,7 +365,7 @@ O evento expressa apenas um fato do domínio. A transformação em OutboxMessage
 
 ```mermaid
 flowchart LR
-		TRANSACTION[Transaction aggregate] -->|gera| EVENT[TransactionCreatedDomainEvent]
+		TRANSACTION[Transaction aggregate] -->|gera| EVENT[TransactionDomainEvent]
 		EVENT -->|Outbox e RabbitMQ| BALANCE[DailyBalance aggregate]
 ```
 
